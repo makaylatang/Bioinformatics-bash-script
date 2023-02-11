@@ -1,0 +1,23 @@
+#$ -S /bin/bash
+#$ -pe serial 1
+#$ -l mfree=40G -l h_rt=10:00:00
+#$ -o /net/hawkins/vol1/Makayla_CT_data/cecum
+#$ -e /net/hawkins/vol1/Makayla_CT_data/cecum
+##*************************************************
+
+##trimmomatic test -clean adaptors
+##Cut&tag
+
+module load java/1.8.0
+
+dir=/net/hawkins/vol1/Makayla_CT_data/cecum ##folder with the fastq
+list=/net/hawkins/vol1/Makayla_CT_data/cecum/sample1.txt ##list file 
+out=/net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean ##output
+
+
+cd $dir
+for SAMPLE_ID in `cat $list`; do
+echo $i
+# Run Trimmomatic
+java -Xmx40g -jar /net/hawkins/vol1/Makayla_CT_data/tools/Trimmomatic-0.39/trimmomatic-0.39.jar PE $dir/${SAMPLE_ID}_R1.fastq $dir/${SAMPLE_ID}_R2.fastq $out/${SAMPLE_ID}_cleanead_R1.fastq $out/${SAMPLE_ID}_unpaired_R1.fastq $out/${SAMPLE_ID}_cleanead_R2.fastq $out/${SAMPLE_ID}_unparied_R2.fastq ILLUMINACLIP:/net/hawkins/vol1/genome2/chicken/vectors_contaminants/CT_illumina_Univec.fa:2:30:10 LEADING:10 TRAILING:10 SLIDINGWINDOW:4:24 MINLEN:10
+done
