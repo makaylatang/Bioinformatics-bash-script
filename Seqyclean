@@ -1,0 +1,23 @@
+#!/bin/bash 
+#$ -S /bin/bash
+#$ -pe serial 3
+#$ -l mfree=20G -l h_rt=170:00:00
+#$ -o /net/hawkins/vol1/RNAseq_FAANG_704/RNAseq_729
+#$ -e /net/hawkins/vol1/RNAseq_FAANG_704/RNAseq_729
+################################################################
+
+##using seqyclean
+##RNA-seqyclean
+##
+##RNA_paper
+##path
+dir=/net/hawkins/vol1/RNAseq_FAANG_704/RNAseq_729
+vec=/net/hawkins/vol1/genome2/chicken/vectors_contaminants/illumina2.fa
+cont=/net/hawkins/vol1/genome2/chicken/vectors_contaminants/UniVec.fa
+out=/net/hawkins/vol1/RNAseq_FAANG_704/RNAseq_729
+cd $dir
+for i in *_1.fq; do  #have to remove .gz, only .fq
+echo $i    #the name 
+/net/hawkins/vol1/ytang25/seqyclean/bin/seqyclean \
+-t ${NSLOTS} -v $vec -c $cont -qual 24 24 -minlen 20 -verbose -1 $i -2 ${i%_1.fq}_2.fq -o $out/${i%_1.fq}_"cleaned"
+done 
