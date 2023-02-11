@@ -1,0 +1,13 @@
+#!/bin/bash
+##$ -S /bin/bash
+##$ -pe serial 1
+##$ -l mfree=65G -l h_rt=127:27:27
+#$ -o /net/hawkins/vol1/home/ytang25/Test/WGBS/clean_SG048
+#$ -e /net/hawkins/vol1/home/ytang25/Test/WGBS/clean_SG048
+
+##########################################################################################################
+
+
+cd /net/hawkins/vol1/home/ytang25/Test/WGBS/clean_SG048
+
+/net/hawkins/vol1/home/ytang25/cgmaptools/cgmaptools convert bam2cgmap -b SG048_sorted.bam -g /net/hawkins/vol1/genome2/chicken/indexes/GCF_016699485.2_bGalGal1.mat.broiler.GRCg7b_genomic.fna --rmOverlap  -o SG048_CGs
