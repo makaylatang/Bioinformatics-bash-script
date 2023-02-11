@@ -1,0 +1,23 @@
+#!/bin/bash
+#$ -S /bin/bash
+#$ -pe serial 1
+#$ -l mfree=65G -l h_rt=100:00:00
+#$ -o /net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean
+#$ -e /net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean
+################################################################
+
+conda activate
+
+dir=/net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean
+cd $dir
+
+fastqc *_cleanead_R*.fastq
+conda deactivate
+
+conda activate multiqc
+
+dir=/net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean
+
+cd $dir
+
+multiqc *.zip
