@@ -1,0 +1,48 @@
+#!/bin/bash
+#$ -S /bin/bash
+#$ -pe serial 1
+#$ -l mfree=50G -l h_rt=150:00:00
+#$ -o /net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling
+#$ -e /net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling
+########################################################################
+### chromap align
+##
+dir=/net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling
+genome=/net/hawkins/vol1/Makayla_CT_data/genome/chromap/GCF_016699485.2_bGalGal1.mat.broiler.GRCg7b_genomic.fna #genome
+index=/net/hawkins/vol1/Makayla_CT_data/genome/chromap/index #index
+list=/net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling/sample.txt 
+size=/net/hawkins/vol1/Makayla_CT_data/genome/chr-NBCI.size #size of chrm
+##
+conda activate chromap
+##
+​
+cd $dir
+for SAMPLE_ID in `cat $list`; do
+# map using chromap, output is bed file
+## Cut&Tag-seq reads
+chromap --preset chip -x $index -r $genome -q 20 --min-read-length 10   -1  ${SAMPLE_ID}_cleanead_R1.fastq  -2 ${SAMPLE_ID}_cleanead_R2.fastq  -o  ${SAMPLE_ID}_CT_chromap.bed
+done 
+​
+########################################################
+#convert to bam
+##big wig files 
+conda activate deeptools ##(the env with deeptools)
+module load samtools/1.9
+module load bedtools/2.29.2
+########################################################
+​
+for SAMPLE_ID in `cat $list`; do
+#convert alignments to BAM
+        bedtools bedtobam  -i ${SAMPLE_ID}_CT_chromap.bed  -g $size > ${SAMPLE_ID}_CT_chromap.bam #input files are the same from chromap
+##sort
+        samtools sort ${SAMPLE_ID}_CT_chromap.bam -@ ${NSLOTS}  -o ${SAMPLE_ID}_CT_chromap_sorted.bam
+##remove
+        samtools index ${SAMPLE_ID}_CT_chromap_sorted.bam
+        samtools idxstats ${SAMPLE_ID}_CT_chromap_sorted.bam | cut -f1 |  | grep -v NC_053523.1 | grep -v NW_ | xargs samtools view -b ${SAMPLE_ID}_CT_chromap_sorted.bam > ${SAMPLE_ID}_CT_chromap-filter.bam
+##sort
+        samtools sort ${SAMPLE_ID}_CT_chromap-filter.bam -@ ${NSLOTS}  -o ${SAMPLE_ID}_CT_chromap-treat.bam
+##convert to bw
+        samtools index ${SAMPLE_ID}_CT_chromap-treat.bam
+​
+bamCoverage -p max -b ${SAMPLE_ID}_CT_chromap-treat.bam  --normalizeUsing RPKM  -v  -o ${SAMPLE_ID}_CT_chromap_norm.bw ##you can use this on the genome browser
+done 
