@@ -1,0 +1,20 @@
+#! /bin/bash
+#$ -S /bin/bash
+#$ -pe serial 1
+#$ -l mfree=40G -l h_rt=10:00:00
+#$ -o /net/hawkins/vol1/Makayla_CT_data/cecum
+#$ -e  /net/hawkins/vol1/Makayla_CT_data/cecum
+########################################################################################
+#trimgalore
+
+conda activate trimgalore
+
+dir=/net/hawkins/vol1/Makayla_CT_data/cecum
+list=/net/hawkins/vol1/Makayla_CT_data/cecum/sample1.txt
+pip=/net/hawkins/vol1/Makayla_CT_data/cecum
+
+cd $dir
+
+for SAMPLE_ID in `cat $list`; do
+bash $pip/trimgalore_1216.sh  ${SAMPLE_ID}_R1.fastq  ${SAMPLE_ID}_R2.fastq
+done
