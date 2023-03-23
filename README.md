@@ -2,7 +2,7 @@
 
 - **Quality control:** `MultiQC`, `QualiMap`
 
-- **Trimming tools:** `TrimGalore`, `Trimmomatic`
+- **Trimming tools:** `SeqClean`, `TrimGalore`, `Trimmomatic`
   
 - **Alignment tools:** `Bowtie`, `Chromap`
   
