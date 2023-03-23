@@ -1,0 +1,15 @@
+## MASC3
+
+# Broad
+macs3 callpeak  -t $1 \
+        -f BAM  -g 1.1e9 --nomodel --shift -100 --extsize 200 \
+        -n  $1_broad3 --keep-dup all --broad \
+        -B  \
+        --outdir macs3 2> macs3/$1_broad3_macs3.log
+
+# Narrow
+macs3 callpeak  -t $1  \
+        -f BAM  -g 1.1e9 --nomodel --shift -100 --extsize 200 \
+        -n $1_narrow3 --keep-dup all \
+        -B  \
+        --outdir macs3 2> macs3/$1_narrow_macs3.log

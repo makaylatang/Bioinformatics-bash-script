@@ -1,0 +1,9 @@
+## Bowtie2
+
+# mapping CT
+bowtie2 -q --threads ${NSLOTS} -x $index \
+               --very-sensitive --end-to-end \
+                -I 10 -X 700 --no-discordant \
+                --no-mixed --no-unal \
+                 -1 ${SAMPLE_ID}_cleanead_R1.fastq -2 ${SAMPLE_ID}_cleanead_R2.fastq \
+                 -S ${SAMPLE_ID}_CT.sam

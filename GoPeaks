@@ -1,0 +1,7 @@
+## GoPeaks
+
+# Broad
+gopeaks --bam  ${SAMPLE_ID}_treat_mod.bam  --pval 0.05 --broad --mdist 3000 --minwidth 150  --verbose -o $out/${SAMPLE_ID}_broad
+
+# Narrow
+gopeaks --bam  ${SAMPLE_ID}_treat_mod.bam   --pval 0.05 --minwidth  150 --verbose -o $out/${SAMPLE_ID}_narrow

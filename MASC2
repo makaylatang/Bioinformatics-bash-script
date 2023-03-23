@@ -1,0 +1,15 @@
+## MASC2 
+
+# Broad
+macs2 callpeak  -t $1 \
+        -f BAM  -g 1.1e9 --nomodel --shift -100 --extsize 200 \
+        -n  $1_broad2 --keep-dup all --broad  \
+        -B  \
+        --outdir macs2 2> macs2/$1_broad2_macs2.log
+
+# Narrow
+macs2 callpeak  -t $1  \
+        -f BAM  -g 1.1e9 --nomodel --shift -100 --extsize 200 \
+        -n $1_narrow2 --keep-dup all \
+        -B  \
+        --outdir macs2 2> macs2/$1_narrow2-macs2.log

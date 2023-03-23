@@ -1,0 +1,4 @@
+## SEACR
+
+# Borad/Narrow
+bash $seacr/SEACR_1.3.sh ${SAMPLE_ID}.bedgraph 0.05 norm stringent $out/${SAMPLE_ID}_data.peaks
