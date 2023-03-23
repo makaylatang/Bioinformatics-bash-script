@@ -1,5 +1,26 @@
 ## Bowtie2
 
+#!/bin/bash
+#$ -S /bin/bash
+#$ -pe serial 1
+#$ -l mfree=50G -l h_rt=100:00:00
+#$ -o /net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling
+#$ -e /net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling
+###**************************************************************************************************
+module load java/1.8.0
+module load samtools/1.9
+module load bowtie2/2.4.1
+conda activate deeptools #the env that you installed the deeptools
+
+# folders
+index=/net/hawkins/vol1/Makayla_CT_data/genome/bowtie/gal7-ncbi #index files
+dir=/net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling #your directory
+list=/net/hawkins/vol1/Makayla_CT_data/cecum/trimmomatic_clean/test_peak_calling/sample.txt #sample list
+
+cd $dir
+
+for SAMPLE_ID in `cat $list`; do
+
 # mapping CT
 bowtie2 -q --threads ${NSLOTS} -x $index \
                --very-sensitive --end-to-end \
@@ -7,3 +28,27 @@ bowtie2 -q --threads ${NSLOTS} -x $index \
                 --no-mixed --no-unal \
                  -1 ${SAMPLE_ID}_cleanead_R1.fastq -2 ${SAMPLE_ID}_cleanead_R2.fastq \
                  -S ${SAMPLE_ID}_CT.sam
+
+
+# convert to bam
+samtools view -@ ${NSLOTS} -Su ${SAMPLE_ID}_CT.sam | samtools sort -@ ${NSLOTS} -o ${SAMPLE_ID}_CT.bam #sort
+
+# remove duplicates
+samtools index  ${SAMPLE_ID}_CT.bam #remove duplicates
+java -Xmx20g -jar /net/hawkins/vol1/home/aolima/tools/picard/picard.jar MarkDuplicates \
+             REMOVE_DUPLICATES=true \
+             I=${SAMPLE_ID}_CT.bam \
+             O=${SAMPLE_ID}_CT_nodups.bam \
+             M=${SAMPLE_ID}_CT_nodups.txt \
+             VALIDATION_STRINGENCY=LENIENT
+# sort again
+samtools view -@ ${NSLOTS} -Su ${SAMPLE_ID}_CT_nodups.bam | samtools sort -@ ${NSLOTS} -o ${SAMPLE_ID}_CT_nodups_sorted.bam
+
+# remove the chrm
+samtools index ${SAMPLE_ID}_CT_nodups_sorted.bam
+samtools idxstats ${SAMPLE_ID}_CT_nodups_sorted.bam | cut -f1 | grep -v MT | grep -v KZ6* | grep -v  AADN* | xargs samtools view -b ${SAMPLE_ID}_CT_nodups_sorted.bam > ${SAMPLE_ID}_bowtie_treat.bam #final bam file 
+
+# convert to bw
+samtools index ${SAMPLE_ID}_bowtie_treat.bam
+bamCoverage -p max -b ${SAMPLE_ID}_bowtie_treat.bam  --normalizeUsing RPKM  -v  -o ${SAMPLE_ID}_bowtie_norm.bw
+done
