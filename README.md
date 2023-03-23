@@ -16,6 +16,3 @@
   - MACS2/MACS3
   - SEACR
 
-- cgmap
-- qualimap
-- seqyclean
