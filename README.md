@@ -1,6 +1,6 @@
 # Bioinformatics-shell-script
 
-- **Quality control:** `multiqc`
+- **Quality control:** `MultiQC`, `QualiMap`
 
 - **Trimming tools:** `TrimGalore`, `Trimmomatic`
   
